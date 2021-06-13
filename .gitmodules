@@ -1,0 +1,9 @@
+[submodule "ROOTMAP.CLI"]
+	path = ROOTMAP.CLI
+	url = https://github.com/ROOTMAPSimulationModel/ROOTMAP.CLI.git
+[submodule "ROOTMAP.Native"]
+	path = ROOTMAP.Native
+	url = https://github.com/ROOTMAPSimulationModel/ROOTMAP.Native.git
+[submodule "ROOTMAP.Configurator"]
+	path = ROOTMAP.Configurator
+	url = https://github.com/ROOTMAPSimulationModel/ROOTMAP.Configurator.git
