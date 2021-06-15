@@ -13,71 +13,72 @@ variables:
     buildConfiguration: 'Release'
 
 steps:
-    - checkout: self
-      submodules: recursive
 
-    - task: GitVersion@5
-      inputs:
-          runtime: 'full'
+- checkout: self
+  submodules: recursive
 
-    - script: '@echo ##vso[build.updatebuildnumber]$(GitVersion.NuGetVersionV2)'
-      displayName: 'Set build version'
+- task: gitversion/setup@0
+  inputs:
+    versionSpec: '5.x'
 
-    - task: NuGetToolInstaller@1
+- script: '@echo ##vso[build.updatebuildnumber]$(GitVersion.NuGetVersionV2)'
+  displayName: 'Set build version'
 
-    - task: PowerShell@2
-      inputs:
-          filePath: 'ROOTMAP.CLI\ROOTMAP.Core\Prepare-ROOTMAP-Dependencies.ps1'
-          arguments: '-forceCleanInstall'
+- task: NuGetToolInstaller@1
 
-    - task: PowerShell@2
-      inputs:
-          filePath: 'ROOTMAP.Native\ROOTMAP.Core\Prepare-ROOTMAP-Dependencies.ps1'
-          arguments: '-forceCleanInstall'
+- task: PowerShell@2
+  inputs:
+      filePath: 'ROOTMAP.CLI\ROOTMAP.Core\Prepare-ROOTMAP-Dependencies.ps1'
+      arguments: '-forceCleanInstall'
 
-    - task: NuGetCommand@2
-      inputs:
-          restoreSolution: 'ROOTMAP.CLI\ROOTMAP.CLI.sln'
+- task: PowerShell@2
+  inputs:
+      filePath: 'ROOTMAP.Native\ROOTMAP.Core\Prepare-ROOTMAP-Dependencies.ps1'
+      arguments: '-forceCleanInstall'
 
-    - task: NuGetCommand@2
-      inputs:
-          restoreSolution: 'ROOTMAP.Native\ROOTMAP.Native.sln'
+- task: NuGetCommand@2
+  inputs:
+      restoreSolution: 'ROOTMAP.CLI\ROOTMAP.CLI.sln'
 
-    - task: MSBuild@1
-      inputs:
-          solution: 'ROOTMAP.CLI\ROOTMAP.CLI.sln'
-          platform: 'x86'
-          configuration: '$(buildConfiguration)'
-          msbuildArguments: '/p:Version=$(Build.BuildNumber)'
+- task: NuGetCommand@2
+  inputs:
+      restoreSolution: 'ROOTMAP.Native\ROOTMAP.Native.sln'
 
-    - task: MSBuild@1
-      inputs:
-          solution: 'ROOTMAP.Native\ROOTMAP.Native.sln'
-          platform: 'x86'
-          configuration: '$(buildConfiguration)'
-          msbuildArguments: '/p:Version=$(Build.BuildNumber)'
+- task: MSBuild@1
+  inputs:
+      solution: 'ROOTMAP.CLI\ROOTMAP.CLI.sln'
+      platform: 'x86'
+      configuration: '$(buildConfiguration)'
+      msbuildArguments: '/p:Version=$(Build.BuildNumber)'
 
-    - script: build.cmd $(buildConfiguration) $(Build.BuildNumber)
-      displayName: Run a custom script to build the dotnet core components of the ROOTMAP suite
-      workingDirectory: '.'
+- task: MSBuild@1
+  inputs:
+      solution: 'ROOTMAP.Native\ROOTMAP.Native.sln'
+      platform: 'x86'
+      configuration: '$(buildConfiguration)'
+      msbuildArguments: '/p:Version=$(Build.BuildNumber)'
 
-    - task: CopyFiles@2
-      inputs:
-          SourceFolder: '$(system.defaultworkingdirectory)'
-          Contents: |
-              ROOTMAP.CLI\$(BuildConfiguration)\**\*
-              ROOTMAP.Native\$(BuildConfiguration)\**\*
-              ROOTMAP.Native\Configurations\**\*
-              ROOTMAP.Native\Documentation\**\*
-              ROOTMAP.Native\Postprocessing\**\*
-              ROOTMAP.Native\Raytracing\**\*
-              ROOTMAP.Native\*.cfg
-              ROOTMAP.Configurator\**\*
-              *.nsi
-          TargetFolder: '$(build.artifactstagingdirectory)'
+- script: build.cmd $(buildConfiguration) $(Build.BuildNumber)
+  displayName: Run a custom script to build the dotnet core components of the ROOTMAP suite
+  workingDirectory: '.'
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-          ArtifactName: 'drop'
-          publishLocation: 'Container'
+- task: CopyFiles@2
+  inputs:
+      SourceFolder: '$(system.defaultworkingdirectory)'
+      Contents: |
+          ROOTMAP.CLI\$(BuildConfiguration)\**\*
+          ROOTMAP.Native\$(BuildConfiguration)\**\*
+          ROOTMAP.Native\Configurations\**\*
+          ROOTMAP.Native\Documentation\**\*
+          ROOTMAP.Native\Postprocessing\**\*
+          ROOTMAP.Native\Raytracing\**\*
+          ROOTMAP.Native\*.cfg
+          ROOTMAP.Configurator\**\*
+          *.nsi
+      TargetFolder: '$(build.artifactstagingdirectory)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'drop'
+      publishLocation: 'Container'
