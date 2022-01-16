@@ -147,13 +147,13 @@ Section "install"
 
   ; Install configuration app
   SetOutPath "$INSTDIR\tools\ConfigurationApp"
-  File /r "ROOTMAP.Configurator\App\bin\Release\netcoreapp3.1\win-x64\publish\"
+  File /r "ROOTMAP.Configurator\App\bin\Release\net6.0-windows\win-x64\publish\"
 
   ; Copy tools
   SetOutPath "$INSTDIR\tools\ConfigurationImporter"
-  File /r "ROOTMAP.Configurator\ConfigurationImporter\ConsoleApp\bin\Release\netcoreapp3.1\win-x64\publish\"
+  File /r "ROOTMAP.Configurator\ConfigurationImporter\ConsoleApp\bin\Release\net6.0\win-x64\publish\"
   SetOutPath "$INSTDIR\tools\SchemaValidator"
-  File /r "ROOTMAP.Configurator\SchemaValidator\ConsoleApp\bin\Release\netcoreapp3.1\win-x64\publish\"
+  File /r "ROOTMAP.Configurator\SchemaValidator\ConsoleApp\bin\Release\net6.0\win-x64\publish\"
   FileOpen $9 watchconfig.bat w
   FileWrite $9 "RootmapSchemaValidator.exe -p ..\..\Configurations --watch --strict $\r$\n"
   FileClose $9
